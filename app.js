@@ -223,7 +223,9 @@ async function analyzeAudio(buffer,token){
 }
 async function loadFile(file){
  if(!file||fileLoading)return;
- fileLoading=true;const token=++fileToken,wasPlaying=playing;setPlaying(false);
+ const wasPlaying=playing;
+ setPlaying(false);
+ fileLoading=true;const token=++fileToken;
  $('play').disabled=true;
  status('Decoding '+file.name+'…');
  try{
@@ -242,9 +244,8 @@ async function loadFile(file){
    resetMachine();$('trackTitle').textContent=file.name;
    status('Loaded '+format(duration)+' · '+built.length+' audio ticks · local-only analysis · trained Korva prediction');
    $('play').disabled=false;refreshPlay();hideHint();
-   if(wasPlaying)setPlaying(true);
  }catch(e){status('Could not load file: '+e.message);$('play').disabled=false;}
- finally{fileLoading=false;$('play').disabled=false;}
+ finally{fileLoading=false;$('play').disabled=false;if(wasPlaying&&source==='file'&&frames)setPlaying(true);}
 }
 function activateDemo(){
  fileToken++;
