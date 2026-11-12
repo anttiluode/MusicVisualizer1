@@ -106,6 +106,7 @@ function getTime(){
 function setPlaying(next){
  if(fileLoading)return;
  if(next===playing)return;
+ const timeAtToggle=getTime();
  playing=next;
  if(playing){
    hideHint();
@@ -117,7 +118,7 @@ function setPlaying(next){
      audioEl.play().catch(e=>{playing=false;status('Playback blocked: '+e.message);refreshPlay();});
    }
  }else{
-   playBase=getTime();
+   playBase=timeAtToggle;
    if(audioEl)audioEl.pause();
  }
  refreshPlay();
