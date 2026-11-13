@@ -1,0 +1,4 @@
+# Local QA / preview only
+.openai/
+dist/
+.superpowers/

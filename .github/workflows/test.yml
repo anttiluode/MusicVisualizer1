@@ -1,4 +1,4 @@
-name: Browser engine smoke tests
+name: Audio, settings and Korva regression tests
 on:
   push:
     branches: [main]
@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate JavaScript syntax
-        run: |
-          node --check app.js
-          node --check korva-engine.js
-          node --check weights.js
-      - name: Verify Korva inference, rhythms and DOM wiring
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify signal analysis, audio lifecycle, settings and timing
+        run: node --test tests/*.test.cjs
+      - name: Verify JavaScript syntax, DOM wiring and original Korva inference
         run: node tests/smoke.cjs

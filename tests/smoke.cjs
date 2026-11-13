@@ -5,7 +5,7 @@ const assert=require('node:assert/strict');
 const path=require('node:path');
 const root=path.join(__dirname,'..');
 const read=name=>fs.readFileSync(path.join(root,name),'utf8');
-for(const name of ['korva-engine.js','weights.js','app.js']){
+for(const name of ['korva-engine.js','weights.js','core.js','audio.js','renderer.js','app.js','classic/app.js']){
   new vm.Script(read(name),{filename:name});
 }
 const html=read('index.html'),app=read('app.js');

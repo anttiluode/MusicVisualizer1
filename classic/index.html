@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070b17">
+<meta name="description" content="KORVA / DREAM GARDEN — a musical world animated by 52 rhythm rings and a tiny predictive transformer.">
+<title>Korva · Dream Garden</title>
+<style>
+:root{color-scheme:dark;--bg:#070b17;--panel:rgba(13,22,39,.74);--line:rgba(167,210,237,.16);--text:#eef6ff;--muted:#9baabd;--teal:#58e4df;--pink:#ef7cff;--gold:#ffc97e;--blue:#71a5ff}
+*{box-sizing:border-box}html,body{padding:0;margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text)}button,input,select{font:inherit}button{color:inherit;cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+#stage{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.ambient{pointer-events:none;position:fixed;inset:0;background:radial-gradient(ellipse at 50% 44%,transparent 28%,rgba(2,6,19,.58) 100%);z-index:1}
+.ui{pointer-events:none;position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:space-between;padding:22px clamp(16px,2.9vw,46px) 24px;gap:18px}.ui>*{pointer-events:auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:14px}.symbol{position:relative;width:43px;height:43px;border:1px solid rgba(88,228,223,.7);border-radius:50%;display:grid;place-items:center;font-size:23px;color:var(--teal);box-shadow:inset 0 0 17px #58e4df26,0 0 18px #58e4df1d}.symbol:before,.symbol:after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px dashed #58e4df55;transform:rotate(19deg)}.symbol:after{inset:7px;border-style:solid;border-color:#ec92ff55}
+.logo h1{font-size:17px;letter-spacing:.24em;margin:0;line-height:1.35;font-weight:680}.logo p{margin:0;color:var(--muted);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.toolbar,.modebar,.buttons,.bottom-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill,.action,.mode{background:rgba(12,23,42,.67);backdrop-filter:blur(15px);border:1px solid var(--line);border-radius:11px;padding:10px 14px;font-size:12px;font-weight:600;letter-spacing:.025em;white-space:nowrap;transition:background .15s,border-color .15s}.pill:hover,.action:hover,.mode:hover{background:#17283b;border-color:#80c9d977}.action.primary{background:#bdf4ea;color:#09202b;border-color:#bdf4ea}.action.primary:hover{background:#fff}.mode[aria-pressed="true"]{background:#182e42;border-color:#5cdbd59c;color:#8efbf1}
+.modebar{align-self:center;padding:5px;background:rgba(6,12,26,.66);border:1px solid var(--line);border-radius:15px;backdrop-filter:blur(18px)}.mode{background:transparent;border-color:transparent;padding:9px 16px}
+#upload{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.upload-label{display:inline-flex;align-items:center;gap:7px}
+.focus{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;position:absolute;top:18%;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;width:min(600px,92vw)}.eyebrow{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:#7dcfce;text-shadow:0 0 16px #7dcfce55}.focus h2{font-size:clamp(19px,3vw,34px);font-weight:380;line-height:1.25;letter-spacing:.11em;margin:2px 0;text-transform:uppercase;text-shadow:0 2px 28px #02040b}.focus p{font-size:12px;line-height:1.6;max-width:44ch;color:#b4c4d5;margin:0}
+.data-layout{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;min-height:0;margin-top:auto}.data-panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 17px;backdrop-filter:blur(18px);box-shadow:0 8px 40px #01051133;min-width:230px}
+.data-panel h3{font-size:10px;letter-spacing:.19em;color:#9fbed0;text-transform:uppercase;font-weight:650;margin:0 0 12px}
+.rings{display:grid;gap:9px}.ring-line{display:grid;grid-template-columns:20px 45px 1fr 45px;gap:9px;align-items:center;font-size:12px}.dot{width:7px;height:7px;border-radius:50%;box-shadow:0 0 10px currentColor}.ring-line:nth-child(1){color:var(--teal)}.ring-line:nth-child(2){color:var(--pink)}.ring-line:nth-child(3){color:var(--gold)}.ring-line .lap{font-variant-numeric:tabular-nums;font-weight:750;color:var(--text)}.ring-line .track{height:4px;background:#46506666;border-radius:10px;overflow:hidden}.ring-line .fill{display:block;height:100%;width:0;background:currentColor;border-radius:10px;transition:width .18s}.ring-line .z{color:#a7baca;text-align:right;font-variant-numeric:tabular-nums;font-size:11px}
+.key{margin:10px 0 0;font-size:11px;color:#a9b8ce}.small{font-size:10px;color:#889bb3}.measurements{display:grid;grid-template-columns:repeat(2,1fr);gap:13px 22px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.measurements div span{display:block;color:#8d9fb1;font-size:10px;letter-spacing:.05em}.measurements div b{display:block;font-size:20px;margin-top:4px;letter-spacing:-.04em;font-variant-numeric:tabular-nums;font-weight:570}
+#bands{width:208px;height:75px;display:block}.right-panel{max-width:253px}.right-panel .small{line-height:1.6;margin-top:8px}
+.bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.bottom-left{max-width:610px;display:flex;gap:10px;align-items:center;min-width:0}.live{width:7px;height:7px;flex:none;border-radius:50%;background:#ffca78;box-shadow:0 0 12px #ffca78aa}.live.on{background:#58e4df;box-shadow:0 0 12px #58e4dfaa}
+#trackTitle{font-size:12px;font-weight:620;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
+#status{color:#9eafbf;font-size:11px;max-width:490px;line-height:1.4}
+.subcontrols{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.subcontrols label{font-size:11px;color:#b3c4d6;display:flex;gap:7px;align-items:center}input[type=range]{width:87px;accent-color:var(--teal)}
+.playline{display:flex;align-items:center;gap:10px;min-width:min(500px,100%);max-width:570px;flex:1}#timeline{accent-color:var(--teal);flex:1;width:100%}#clock{font-size:11px;letter-spacing:.04em;color:#b5c5d6;font-variant-numeric:tabular-nums;min-width:95px;text-align:right}
+.info{position:absolute;right:clamp(16px,2.9vw,46px);top:105px;font-size:10px;color:#91b2cb;text-transform:uppercase;letter-spacing:.14em;pointer-events:none;text-align:right}
+#hint{position:absolute;bottom:165px;left:50%;transform:translateX(-50%);pointer-events:none;font-size:12px;color:#c7d9ed;background:#0812269c;border:1px solid #8daec333;border-radius:25px;padding:10px 19px;opacity:1;transition:opacity 1s;white-space:nowrap;text-align:center}
+#drop{position:fixed;inset:12px;border:2px dashed #69e2d8;background:#051223cc;z-index:10;display:none;place-items:center;font-size:clamp(18px,4vw,36px);letter-spacing:.1em;text-align:center;pointer-events:none}body.dragging #drop{display:grid}
+@media(max-width:950px){.data-layout{justify-content:flex-end}.right-panel{display:none}.info{display:none}.focus{top:20%}.bottom{gap:12px}.bottom-left{order:2;width:100%}.bottom-controls{width:100%}}
+@media(max-width:600px){.ui{padding:14px;gap:8px}.logo h1{font-size:14px}.logo p{font-size:9px}.logo .symbol{height:35px;width:35px}.toolbar{gap:5px}.pill,.action{padding:8px 10px;font-size:11px}.modebar{align-self:stretch;justify-content:center}.mode{padding:8px 13px;font-size:11px}.focus{top:29%}.focus p{display:none}.data-panel{padding:10px 13px;min-width:202px}.data-panel h3{margin-bottom:6px}.data-layout{margin-bottom:4px}.bottom-left{display:none}.bottom-controls{gap:8px}.subcontrols label{font-size:10px}#hint{bottom:180px;white-space:normal;width:86%}.measurements{margin-top:9px;gap:6px 15px}.measurements div b{font-size:16px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="stage" aria-label="Music-driven animated Fourier flower with three predictive rhythm rings"></canvas>
+<div class="ambient"></div><div id="drop">DROP YOUR MUSIC HERE</div>
+<div class="ui">
+<header>
+  <div class="logo"><div class="symbol">✺</div><div><h1>KORVA</h1><p>Dream Garden · MusicVisualizer1</p></div></div>
+  <div class="toolbar">
+    <button id="demo" class="pill" title="Load the original generative demo">↻ Demo</button>
+    <label class="pill upload-label" for="upload" title="Choose a local audio file">↑ Load music</label>
+    <input id="upload" type="file" accept="audio/*">
+    <button id="play" class="action primary" aria-label="Play or pause">▶ Play</button>
+    <button id="fullscreen" class="action" title="Toggle fullscreen">⛶</button>
+    <button id="snapshot" class="action" title="Save image as PNG">↓ PNG</button>
+  </div>
+</header>
+<nav class="modebar" aria-label="Visual mode">
+  <button class="mode" data-mode="flower" aria-pressed="true">✺ Flower</button>
+  <button class="mode" data-mode="orrery" aria-pressed="false">◎ 52 Rings</button>
+  <button class="mode" data-mode="ghost" aria-pressed="false">⌁ Ghosts</button>
+</nav>
+<div class="focus"><span class="eyebrow" id="eyebrow">The music that remembers</span><h2 id="modeTitle">A flower of frequencies</h2><p id="modeDesc">What repeats becomes structure. What is expected glows before it arrives. What surprises changes the garden.</p></div>
+<div class="info">52 delay rings · 3 selected echoes<br>8 onset bands · 2-layer transformer<br>rendering at screen refresh rate</div>
+<div id="hint">Press ▶ to hear the demo, or drop an audio file anywhere.</div>
+<section class="data-layout">
+  <div class="data-panel">
+    <h3>Korva · Rhythm memory</h3>
+    <div class="rings" id="rings">
+      <div class="ring-line"><span class="dot">●</span><span class="lap" id="lap0">—</span><div class="track"><i class="fill" id="phase0"></i></div><span class="z" id="z0">—</span></div>
+      <div class="ring-line"><span class="dot">●</span><span class="lap" id="lap1">—</span><div class="track"><i class="fill" id="phase1"></i></div><span class="z" id="z1">—</span></div>
+      <div class="ring-line"><span class="dot">●</span><span class="lap" id="lap2">—</span><div class="track"><i class="fill" id="phase2"></i></div><span class="z" id="z2">—</span></div>
+    </div>
+    <div class="measurements">
+      <div><span>Organ attention</span><b id="attention">—</b></div>
+      <div><span>Unexpected</span><b id="surprise">—</b></div>
+    </div>
+    <p class="key">Circles hold the past. A ghost marks the future.</p>
+  </div>
+  <div class="data-panel right-panel">
+    <h3>Eight frequency bands</h3><canvas id="bands" width="416" height="150"></canvas>
+    <div class="small">Bass → treble. Smooth energy animates the flower; Korva reads eight discrete onset channels.</div>
+    <div class="measurements"><div><span>Input tick</span><b id="tick">0</b></div><div><span>Predicted beats</span><b id="expected">0</b></div></div>
+  </div>
+</section>
+<footer class="bottom">
+  <div class="bottom-left"><i id="live" class="live"></i><div><div id="trackTitle">Original generative demo</div><div id="status" role="status" aria-live="polite">The pretrained Korva organ and transformer are loaded in your browser.</div></div></div>
+  <div class="bottom-controls">
+    <div class="playline"><input type="range" id="timeline" min="0" max="1000" value="0" aria-label="Seek through the song"><span id="clock">00:00 / ∞</span></div>
+    <div class="subcontrols"><label>Sensitivity <input id="sensitivity" type="range" min="0.3" max="2.5" value="1.25" step="0.05"></label><label><input id="showGhosts" type="checkbox" checked> Predictions</label></div>
+  </div>
+</footer>
+</div>
+<script src="../korva-engine.js"></script>
+<script src="../weights.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
